@@ -19,7 +19,7 @@ class RegmemController extends Controller
 
         //随机生成一个redis变量名
         //$code=str_random('6');
-        Redis::setex('code'.$request->tel,300,str_random('6'));
+        Redis::setex('code'.$request->tel,300,mt_rand('100000','999999'));
         $code=Redis::get('code'.$request->tel);
         dump($code);
 

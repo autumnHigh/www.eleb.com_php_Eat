@@ -45,6 +45,13 @@ Route::post('cart/saveadd','CartController@saveadd')->name('cart.saveadd');
 Route::get('cart/list','CartController@list')->name('cart.list');
 
 //orders订单表的所需节点
+
+//订单下单成功，发送邮件给用户
+Route::get('order/message','OrderController@message')->name('order.message');
+
 Route::post('order/shopsave','OrderController@shopsave')->name('order.shopsave');
 Route::get('order/list','OrderController@list')->name('order.list');
 Route::get('order/orderlist','OrderController@orderlist')->name('order.orderlist');
+
+
+

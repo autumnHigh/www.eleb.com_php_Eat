@@ -8,14 +8,31 @@ use App\Models\Menu;
 use App\Models\Od;
 use App\Models\Order;
 use App\Models\Shop;
+use App\Models\SignatureHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
     //添加订单数据，同时添加数据到订单商品表中
     public function shopsave(Request $request){
+
+       //dump($request->all());
+       /* $shop_id=32;
+//dump($shop_id);
+        $user=DB::table('users')->where('shop_id','=',$shop_id)->first();
+//dump($user);
+        //定义保存发怂邮件需要的数据
+        $data=['name'=>$user->name,'email'=>$user->email];
+        dump($data);
+        //发送邮件信息
+        $this->send($data);
+        dump('邮件发送成功');
+        exit;*/
+
+
 
 /*
         if(!$request->address_id){
@@ -137,6 +154,20 @@ class OrderController extends Controller
              }*/
             DB::table('carts')->where('user_id','=',Auth::user()->id)->delete();
 
+
+            //发送邮件,根据上面查询的最后一个购物车的shop_id得到哪一个商家的 shop_id数据，再去查询符合的商户表的数据
+            $user=DB::table('users')->where('shop_id','=',$shop_id)->first();
+//dump($user);
+            //定义保存发怂邮件需要的数据
+            $data=['name'=>$user->name,'email'=>$user->email];
+           // dump($data);
+            //发送邮件信息
+            $this->send($data);
+            //订单成功下单之后，发送短信到用户手机上
+            $this->message(Auth::user()->tel);
+
+
+
             DB::commit();
 
             //返回执行状态
@@ -159,9 +190,80 @@ class OrderController extends Controller
 
         }
 
-
-
     }
+
+
+    //下单成功之后，发送短信给用户
+    public function message($tel){
+
+
+
+        //dump($request->all());
+       // exit;
+        $params = array ();
+
+        // *** 需用户填写部分 ***
+        // fixme 必填：是否启用https
+        $security = false;
+
+        // fixme 必填: 请参阅 https://ak-console.aliyun.com/ 取得您的AK信息
+        $accessKeyId = "LTAIInQ3Y57LPePO";
+        $accessKeySecret = "LgdJ2WhnWSFMmTJu6xE2MDb4bpOdmY";
+
+        // fixme 必填: 短信接收号码
+        $params["PhoneNumbers"] = $tel;
+
+        // fixme 必填: 短信签名，应严格按"签名名称"填写，请参考: https://dysms.console.aliyun.com/dysms.htm#/develop/sign
+        $params["SignName"] = "庞克的个人case";
+
+        // fixme 必填: 短信模板Code，应严格按"模板CODE"填写, 请参考: https://dysms.console.aliyun.com/dysms.htm#/develop/template
+        $params["TemplateCode"] = "SMS_150570073";
+
+        // fixme 可选: 设置模板参数, 假如模板中存在变量需要替换则为必填项
+        $params['TemplateParam'] = Array (
+            "code" => "12345",
+            //"product" => "阿里通信"
+        );
+
+        // fixme 可选: 设置发送短信流水号
+        $params['OutId'] = "12345";
+
+        // fixme 可选: 上行短信扩展码, 扩展码字段控制在7位或以下，无特殊需求用户请忽略此字段
+        $params['SmsUpExtendCode'] = "1234567";
+
+
+        // *** 需用户填写部分结束, 以下代码若无必要无需更改 ***
+        if(!empty($params["TemplateParam"]) && is_array($params["TemplateParam"])) {
+            $params["TemplateParam"] = json_encode($params["TemplateParam"], JSON_UNESCAPED_UNICODE);
+        }
+
+        // 初始化SignatureHelper实例用于设置参数，签名以及发送请求
+        $helper = new SignatureHelper();
+
+        // 此处可能会抛出异常，注意catch
+        $content = $helper->request(
+            $accessKeyId,
+            $accessKeySecret,
+            "dysmsapi.aliyuncs.com",
+            array_merge($params, array(
+                "RegionId" => "cn-hangzhou",
+                "Action" => "SendSms",
+                "Version" => "2017-05-25",
+            )),
+            $security
+        );
+
+        $content;
+    }
+
+    //下订单发送商家邮件处理订单
+    public function send($data){
+        Mail::send('email', ['name'=>$data['name']], function($message) use($data)
+        {
+            $message->to($data['email'])->subject('新的订单需要处理！');
+        });
+    }
+
 
     //显示订单数据到表单中
     public function list(){
@@ -191,7 +293,7 @@ class OrderController extends Controller
         $date=[
             'id'=>$order->id,
             'order_code'=>$order->sn,
-            'order_birth_time'=>$order->created_at,
+            'order_birth_time'=>date('Y-m-d H-i-s',strtotime($order->created_at)),
             'order_status'=>$order->status,//前端的订单页面详细按钮，改成 '代付款'
             'shop_id'=>$order->shop_id,
             'shop_img'=>$shop->shop_img,
@@ -246,7 +348,8 @@ class OrderController extends Controller
             $data=[
                 'id'=>$order->id,
                 'order_code'=>$order->sn,
-                'order_birth_time'=>$order->created_at,
+                //'order_birth_time'=>date('Y-m-d H-i-s',strtotime($order->created_at)),
+                'order_birth_time'=>$order->created_at->toDatetimeString(),//拿出来的是一个对象，需要转换为时间日期格式
                 'order_status'=>$order->status,
                 'shop_id'=>$order->shop_id,
                 'shop_img'=>$shop->shop_img,
