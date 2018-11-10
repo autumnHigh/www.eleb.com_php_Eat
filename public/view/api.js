@@ -1,37 +1,37 @@
 window.api = {
   // 登录验证接口
-  loginCheck: 'http://www.eeleb.test/regmem/login',
+  loginCheck: '/regmem/login',
   // 获取短信验证码接口
-  sms: 'http://www.eeleb.test/regmem/tel',
+  sms: '/regmem/tel',
   // 注册接口
-  regist: 'http://www.eeleb.test/regmem/register',
+  regist: '/regmem/register',
   // 修改密码接口
-  changePassword: 'http://www.eeleb.test/regmem/changePassword',
+  changePassword: '/regmem/changePassword',
   // 忘记密码接口
-  forgetPassword: 'http://www.eeleb.test/regmem/forgetPassword',
+  forgetPassword: '/regmem/forgetPassword',
   // 地址列表接口
-  addressList: 'http://www.eeleb.test/address/list',
+  addressList: '/address/list',
   // 指定地址接口
-  address: 'http://www.eeleb.test/address/change',
+  address: '/address/change',
   // 保存新增地址接口
-  addAddress: 'http://www.eeleb.test/address/saveadd',
+  addAddress: '/address/saveadd',
   // 保存修改地址接口
-  editAddress: 'http://www.eeleb.test/address/savechange',
+  editAddress: '/address/savechange',
   // 获得订单列表接口
-  orderList: 'http://www.eeleb.test/order/orderlist',
+  orderList: '/order/orderlist',
   // 获得指定订单接口
-  order: 'http://www.eeleb.test/order/list',
+  order: '/order/list',
   // 获得商家列表接口
-  businessList: 'http://www.eeleb.test/shop/show',
+  businessList: '/shop/show',
   // 获得指定商家接口
-  business: 'http://www.eeleb.test/shop',
+  business: '/shop',
   // 保存购物车接口
-  addCart: 'http://www.eeleb.test/cart/saveadd',
+  addCart: '/cart/saveadd',
   // 获取购物车数据接口
   //cart: '/cart.php',
-  cart: 'http://www.eeleb.test/cart/list',
+  cart: '/cart/list',
   // 添加订单接口
-  addOrder: 'http://www.eeleb.test/order/shopsave',
+  addOrder: '/order/shopsave',
   // 支付接口
   pay: '/pay.php'
 };
