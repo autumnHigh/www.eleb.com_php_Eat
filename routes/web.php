@@ -12,7 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('/view');
+    //return route('');
 });
 
 //商户的信息路由
